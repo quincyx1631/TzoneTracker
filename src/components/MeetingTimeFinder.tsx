@@ -1,16 +1,22 @@
-import React from "react";
+import type React from "react";
 import { Calendar, Users, Clock } from "lucide-react";
-import type { TeamMember, AppSettings } from "../types";
-import { findOptimalMeetingTimes } from "../utils/timezone";
+import type { TeamMember, AppSettings, Leader } from "../types";
+import {
+  convertWorkingHoursToTimezone,
+  isWithinWorkingHours,
+  getTimeInTimezone,
+} from "../utils/timezone";
 
 interface MeetingTimeFinderProps {
   members: TeamMember[];
   settings: AppSettings;
+  leader?: Leader | null;
 }
 
 export const MeetingTimeFinder: React.FC<MeetingTimeFinderProps> = ({
   members,
   settings,
+  leader,
 }) => {
   if (members.length === 0) {
     return (
@@ -34,7 +40,69 @@ export const MeetingTimeFinder: React.FC<MeetingTimeFinderProps> = ({
     );
   }
 
-  const availability = findOptimalMeetingTimes(members);
+  // Calculate availability using manager's converted working hours
+  const availability = [];
+
+  for (let hour = 0; hour < 24; hour++) {
+    let availableMembers = 0;
+    const memberDetails: Array<{
+      member: TeamMember;
+      isAvailable: boolean;
+      localTime: number;
+    }> = [];
+
+    // Group members by timezone and calculate availability
+    const timezoneGroups = new Map<string, TeamMember[]>();
+
+    members.forEach((member) => {
+      if (!timezoneGroups.has(member.timezone)) {
+        timezoneGroups.set(member.timezone, []);
+      }
+      timezoneGroups.get(member.timezone)!.push(member);
+    });
+
+    timezoneGroups.forEach((membersInTimezone, timezone) => {
+      // Calculate time for this hour in the timezone
+      const baseDate = new Date();
+      baseDate.setHours(hour, 0, 0, 0);
+      const timeInTimezone = getTimeInTimezone(timezone, baseDate);
+      const hourInTimezone = timeInTimezone.getHours();
+
+      // Get working hours for this timezone
+      let workingHours: { start: number; end: number; nextDay: boolean };
+      if (leader) {
+        workingHours = convertWorkingHoursToTimezone(
+          leader.workingHours,
+          leader.timezone,
+          timezone
+        );
+      } else {
+        workingHours = { start: 9, end: 17, nextDay: false };
+      }
+
+      // Check if members in this timezone are available
+      membersInTimezone.forEach((member: TeamMember) => {
+        const isAvailable = isWithinWorkingHours(hourInTimezone, workingHours);
+        if (isAvailable) {
+          availableMembers++;
+        }
+        memberDetails.push({
+          member,
+          isAvailable,
+          localTime: hourInTimezone,
+        });
+      });
+    });
+
+    availability.push({
+      hour,
+      available: availableMembers === members.length,
+      memberCount: availableMembers,
+      percentage: (availableMembers / members.length) * 100,
+      memberDetails,
+    });
+  }
+
   const optimalTimes = availability.filter((slot) => slot.available);
   const goodTimes = availability.filter(
     (slot) => slot.percentage >= 75 && !slot.available
@@ -49,7 +117,7 @@ export const MeetingTimeFinder: React.FC<MeetingTimeFinderProps> = ({
 
   return (
     <div
-      className={`rounded-xl shadow-lg p-6 ${
+      className={`rounded-xl shadow-lg p-4 sm:p-6 ${
         settings.darkMode ? "bg-gray-800" : "bg-white"
       }`}
     >
@@ -70,12 +138,55 @@ export const MeetingTimeFinder: React.FC<MeetingTimeFinderProps> = ({
               settings.darkMode ? "text-gray-400" : "text-gray-600"
             }`}
           >
-            Find optimal times when everyone is available
+            {leader
+              ? `Based on ${leader.name}'s working hours (${leader.workingHours.start}:00-${leader.workingHours.end}:00) converted to all timezones`
+              : "Find optimal times when everyone is available"}
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {leader && (
+        <div
+          className={`mb-6 p-4 rounded-lg border ${
+            settings.darkMode
+              ? "bg-blue-900/20 border-blue-800"
+              : "bg-blue-50 border-blue-200"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h4
+                className={`text-sm font-medium ${
+                  settings.darkMode ? "text-white" : "text-gray-900"
+                }`}
+              >
+                Manager's Working Hours Applied
+              </h4>
+              <p
+                className={`text-xs mt-1 ${
+                  settings.darkMode ? "text-gray-400" : "text-gray-600"
+                }`}
+              >
+                {leader.name} (
+                {leader.timezone.split("/")[1]?.replace(/_/g, " ")}):{" "}
+                {leader.workingHours.start.toString().padStart(2, "0")}:00 -{" "}
+                {leader.workingHours.end.toString().padStart(2, "0")}:00
+              </p>
+            </div>
+            <div
+              className={`text-xs px-2 py-1 rounded ${
+                settings.darkMode
+                  ? "bg-blue-800 text-blue-200"
+                  : "bg-blue-100 text-blue-800"
+              }`}
+            >
+              Auto-converted
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <div>
           <h4
             className={`font-medium mb-3 flex items-center ${
@@ -181,18 +292,18 @@ export const MeetingTimeFinder: React.FC<MeetingTimeFinderProps> = ({
         >
           24-Hour Availability Overview
         </h4>
-        <div className="grid grid-cols-12 gap-1">
+        <div className="grid grid-cols-6 sm:grid-cols-12 gap-1">
           {availability.map((slot) => (
             <div
               key={slot.hour}
-              className={`h-8 rounded ${getTimeColor(
+              className={`h-6 sm:h-8 rounded ${getTimeColor(
                 slot.percentage
               )} relative group cursor-pointer`}
               title={`${slot.hour}:00 - ${slot.memberCount}/${
                 members.length
               } available (${slot.percentage.toFixed(0)}%)`}
             >
-              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
                 {slot.hour}:00 - {slot.memberCount}/{members.length}
               </div>
             </div>

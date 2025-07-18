@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import type React from "react";
 import { Clock, MapPin, Briefcase, X } from "lucide-react";
 import type { TeamMember, AppSettings } from "../types";
 import { getTimeInTimezone, formatTime, formatDate } from "../utils/timezone";
@@ -22,31 +24,31 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
 
   return (
     <div
-      className={`rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border ${
+      className={`rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-4 sm:p-6 border ${
         settings.darkMode
           ? "bg-gray-800 border-gray-700"
           : "bg-white border-gray-100"
       }`}
     >
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+      <div className="flex items-start justify-between mb-3 sm:mb-4">
+        <div className="flex items-center space-x-2 sm:space-x-3">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-lg">
             {member.name.charAt(0).toUpperCase()}
           </div>
           <div>
             <h3
-              className={`text-lg font-semibold ${
+              className={`text-base sm:text-lg font-semibold ${
                 settings.darkMode ? "text-white" : "text-gray-900"
               }`}
             >
               {member.name}
             </h3>
             <div
-              className={`flex items-center text-sm ${
+              className={`flex items-center text-xs sm:text-sm ${
                 settings.darkMode ? "text-gray-400" : "text-gray-600"
               }`}
             >
-              <Briefcase className="w-4 h-4 mr-1" />
+              <Briefcase className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
               {member.role}
             </div>
           </div>
@@ -76,12 +78,12 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Clock
-              className={`w-4 h-4 mr-2 ${
+              className={`w-3 h-3 sm:w-4 sm:h-4 mr-2 ${
                 settings.darkMode ? "text-gray-400" : "text-gray-600"
               }`}
             />
             <span
-              className={`text-sm ${
+              className={`text-xs sm:text-sm ${
                 settings.darkMode ? "text-gray-400" : "text-gray-600"
               }`}
             >
@@ -90,14 +92,14 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
           </div>
           <div className="text-right">
             <div
-              className={`text-xl font-bold ${
+              className={`text-lg sm:text-xl font-bold ${
                 settings.darkMode ? "text-white" : "text-gray-900"
               }`}
             >
               {formatTime(currentTime)}
             </div>
             <div
-              className={`text-sm ${
+              className={`text-xs sm:text-sm ${
                 settings.darkMode ? "text-gray-500" : "text-gray-500"
               }`}
             >

@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 import { Clock, Globe } from "lucide-react";
 import type { TeamMember, AppSettings } from "../types";
 import { getTimeInTimezone, formatTime } from "../utils/timezone";
@@ -132,7 +132,7 @@ export const TimezoneGrid: React.FC<TimezoneGridProps> = ({
 
       {/* Timezone Groups */}
       <div className="p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
           {timezoneGroups.map((group) => (
             <div key={group.timezone} className="space-y-4">
               {/* Timezone Header */}
@@ -169,7 +169,7 @@ export const TimezoneGrid: React.FC<TimezoneGridProps> = ({
               </div>
 
               {/* Member Avatars */}
-              <div className="flex flex-wrap justify-center gap-3">
+              <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
                 {group.members.map((member) => {
                   const currentTime = getTimeInTimezone(member.timezone);
                   const currentHour = currentTime.getHours();
@@ -184,7 +184,7 @@ export const TimezoneGrid: React.FC<TimezoneGridProps> = ({
                     >
                       <div className="relative">
                         <div
-                          className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-sm ${
+                          className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm ${
                             isWorking
                               ? "bg-gradient-to-br from-green-500 to-emerald-600"
                               : "bg-gradient-to-br from-gray-400 to-gray-500"
@@ -194,7 +194,7 @@ export const TimezoneGrid: React.FC<TimezoneGridProps> = ({
                         </div>
                         {/* Status indicator */}
                         <div
-                          className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 ${
+                          className={`absolute -bottom-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 ${
                             settings.darkMode
                               ? "border-gray-800"
                               : "border-white"
@@ -293,8 +293,8 @@ function parseUtcOffset(offset: string): number {
   if (!match) return 0;
 
   const sign = match[1] === "+" ? 1 : -1;
-  const hours = parseInt(match[2], 10);
-  const minutes = parseInt(match[3], 10);
+  const hours = Number.parseInt(match[2], 10);
+  const minutes = Number.parseInt(match[3], 10);
 
   return sign * (hours + minutes / 60);
 }

@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+"use client";
+
+import type React from "react";
+import { useState } from "react";
 import {
   Globe,
   Search,
@@ -9,6 +12,7 @@ import {
   Edit,
   Moon,
   Sun,
+  Clock,
 } from "lucide-react";
 import type { Leader, AppSettings } from "../types";
 import { commonTimezones } from "../utils/timezone";
@@ -86,39 +90,53 @@ export const Header: React.FC<HeaderProps> = ({
             : "bg-white/95 border-gray-200/50"
         } backdrop-blur-sm shadow-sm border-b transition-all duration-300`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          {/* Single Header Row */}
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-2 sm:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Globe className="w-4 h-4 text-white" />
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
               </div>
               <h1
-                className={`text-lg font-semibold ${
+                className={`text-base sm:text-lg font-semibold ${
                   settings.darkMode ? "text-white" : "text-gray-900"
                 }`}
               >
                 TimezoneTracker
               </h1>
 
-              {/* Current Time */}
-              <div className="flex items-center space-x-2 ml-8">
+              <div className="hidden sm:flex items-center space-x-2 ml-4 lg:ml-8">
                 <div
-                  className={`text-2xl font-bold ${
+                  className={`text-lg sm:text-2xl font-bold ${
                     settings.darkMode ? "text-white" : "text-gray-900"
                   }`}
                 >
                   {currentTime}
                 </div>
-                <div className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                <div className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs font-medium rounded-full flex items-center gap-1">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   Live
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center space-x-3">
-              {/* Search */}
-              <div className="relative">
+            <div className="flex items-center space-x-1 sm:space-x-3">
+              {/* Mobile time display */}
+              <div className="sm:hidden flex flex-col items-end">
+                <div
+                  className={`text-sm font-bold ${
+                    settings.darkMode ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  {currentTime}
+                </div>
+                <div className="px-1 py-0.5 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs rounded-full flex items-center gap-1">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                  Live
+                </div>
+              </div>
+
+              {/* Search - hidden on mobile, shown on larger screens */}
+              <div className="relative hidden md:block">
                 <Search
                   className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
                     settings.darkMode ? "text-gray-400" : "text-gray-400"
@@ -129,7 +147,7 @@ export const Header: React.FC<HeaderProps> = ({
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => onSearchChange(e.target.value)}
-                  className={`pl-10 pr-4 py-2 rounded-full border-0 transition-colors w-64 ${
+                  className={`pl-10 pr-4 py-2 rounded-full border-0 transition-colors w-48 lg:w-64 ${
                     settings.darkMode
                       ? "bg-gray-800 text-white placeholder-gray-400"
                       : "bg-gray-100 text-gray-900 placeholder-gray-400"
@@ -137,35 +155,34 @@ export const Header: React.FC<HeaderProps> = ({
                 />
               </div>
 
-              {/* Action Buttons */}
               <button
                 onClick={onAddMember}
-                className={`p-2 rounded-lg transition-colors ${
+                className={`p-1.5 sm:p-2 rounded-lg transition-colors ${
                   settings.darkMode
                     ? "text-gray-300 hover:bg-gray-800"
                     : "text-gray-600 hover:bg-gray-100"
                 }`}
                 title="Add Member"
               >
-                <Plus className="w-5 h-5" />
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
 
               <div className="relative">
                 <button
                   onClick={() => setShowSettings(!showSettings)}
-                  className={`p-2 rounded-lg transition-colors ${
+                  className={`p-1.5 sm:p-2 rounded-lg transition-colors ${
                     settings.darkMode
                       ? "text-gray-300 hover:bg-gray-800"
                       : "text-gray-600 hover:bg-gray-100"
                   }`}
                   title="Settings"
                 >
-                  <Settings className="w-5 h-5" />
+                  <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
 
                 {showSettings && (
                   <div
-                    className={`absolute right-0 top-12 w-72 rounded-xl shadow-xl border z-50 ${
+                    className={`absolute right-0 top-12 w-72 sm:w-80 rounded-xl shadow-xl border z-50 ${
                       settings.darkMode
                         ? "bg-gray-800 border-gray-600"
                         : "bg-white border-gray-200"
@@ -180,7 +197,6 @@ export const Header: React.FC<HeaderProps> = ({
                         Settings
                       </h3>
 
-                      {/* Dark Mode Toggle */}
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-2">
                           {settings.darkMode ? (
@@ -223,7 +239,7 @@ export const Header: React.FC<HeaderProps> = ({
                               : "text-gray-700"
                           }`}
                         >
-                          Default Working Hours
+                          Default Working Hours (for new members)
                         </label>
                         <div className="grid grid-cols-2 gap-3">
                           <div>
@@ -252,7 +268,7 @@ export const Header: React.FC<HeaderProps> = ({
                             >
                               {Array.from({ length: 24 }, (_, i) => (
                                 <option key={i} value={i}>
-                                  {i}:00
+                                  {i.toString().padStart(2, "0")}:00
                                 </option>
                               ))}
                             </select>
@@ -283,7 +299,7 @@ export const Header: React.FC<HeaderProps> = ({
                             >
                               {Array.from({ length: 24 }, (_, i) => (
                                 <option key={i} value={i}>
-                                  {i}:00
+                                  {i.toString().padStart(2, "0")}:00
                                 </option>
                               ))}
                             </select>
@@ -295,7 +311,6 @@ export const Header: React.FC<HeaderProps> = ({
                 )}
               </div>
 
-              {/* Leader Profile */}
               {leader && (
                 <div className="relative">
                   <button
@@ -306,14 +321,14 @@ export const Header: React.FC<HeaderProps> = ({
                         : "hover:bg-gray-100"
                     }`}
                   >
-                    <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xs">
                       {leader.name.charAt(0).toUpperCase()}
                     </div>
                   </button>
 
                   {showProfile && (
                     <div
-                      className={`absolute right-0 top-12 w-64 rounded-xl shadow-xl border z-50 ${
+                      className={`absolute right-0 top-12 w-64 sm:w-72 rounded-xl shadow-xl border z-50 ${
                         settings.darkMode
                           ? "bg-gray-800 border-gray-600"
                           : "bg-white border-gray-200"
@@ -347,24 +362,41 @@ export const Header: React.FC<HeaderProps> = ({
                         </div>
 
                         <div
-                          className={`text-sm mb-4 ${
-                            settings.darkMode
-                              ? "text-gray-300"
-                              : "text-gray-600"
+                          className={`text-sm mb-4 p-3 rounded-lg ${
+                            settings.darkMode ? "bg-gray-700" : "bg-gray-50"
                           }`}
                         >
-                          <div className="flex justify-between mb-1">
-                            <span>Working Hours:</span>
-                            <span>
-                              {leader.workingHours.start}:00 -{" "}
-                              {leader.workingHours.end}:00
+                          <div className="flex items-center mb-2">
+                            <Clock className="w-4 h-4 mr-2" />
+                            <span className="font-medium">
+                              Manager Working Hours
                             </span>
                           </div>
-                          <div className="flex justify-between">
-                            <span>Timezone:</span>
-                            <span>
-                              {leader.timezone.split("/")[1]?.replace("_", " ")}
-                            </span>
+                          <div className="text-xs space-y-1">
+                            <div className="flex justify-between">
+                              <span>Hours:</span>
+                              <span>
+                                {leader.workingHours.start
+                                  .toString()
+                                  .padStart(2, "0")}
+                                :00 -{" "}
+                                {leader.workingHours.end
+                                  .toString()
+                                  .padStart(2, "0")}
+                                :00
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Timezone:</span>
+                              <span>
+                                {leader.timezone
+                                  .split("/")[1]
+                                  ?.replace("_", " ")}
+                              </span>
+                            </div>
+                            <div className="text-blue-600 dark:text-blue-400 mt-2">
+                              These hours will be converted for all team members
+                            </div>
                           </div>
                         </div>
 
@@ -401,7 +433,6 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </header>
 
-      {/* Leader Setup/Edit Form */}
       {showLeaderForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div
@@ -419,20 +450,8 @@ export const Header: React.FC<HeaderProps> = ({
                   settings.darkMode ? "text-white" : "text-gray-900"
                 }`}
               >
-                {leader ? "Edit Profile" : "Setup Your Profile"}
+                {leader ? "Edit Manager Profile" : "Setup Manager Profile"}
               </h2>
-              {leader && (
-                <button
-                  onClick={() => setShowLeaderForm(false)}
-                  className={`${
-                    settings.darkMode
-                      ? "text-gray-400 hover:text-gray-300"
-                      : "text-gray-400 hover:text-gray-600"
-                  } transition-colors`}
-                >
-                  <User className="w-6 h-6" />
-                </button>
-              )}
             </div>
 
             <form onSubmit={handleLeaderSubmit} className="p-6 space-y-4">
@@ -517,70 +536,87 @@ export const Header: React.FC<HeaderProps> = ({
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    className={`block text-sm font-medium mb-2 ${
-                      settings.darkMode ? "text-gray-300" : "text-gray-700"
-                    }`}
-                  >
-                    Start Time
-                  </label>
-                  <select
-                    value={leaderForm.workingHours.start}
-                    onChange={(e) =>
-                      setLeaderForm((prev) => ({
-                        ...prev,
-                        workingHours: {
-                          ...prev.workingHours,
-                          start: Number(e.target.value),
-                        },
-                      }))
-                    }
-                    className={`w-full px-3 py-2 border rounded-lg transition-colors ${
-                      settings.darkMode
-                        ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                        : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:ring-2 focus:ring-blue-200`}
-                  >
-                    {Array.from({ length: 24 }, (_, i) => (
-                      <option key={i} value={i}>
-                        {i}:00
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label
-                    className={`block text-sm font-medium mb-2 ${
-                      settings.darkMode ? "text-gray-300" : "text-gray-700"
-                    }`}
-                  >
-                    End Time
-                  </label>
-                  <select
-                    value={leaderForm.workingHours.end}
-                    onChange={(e) =>
-                      setLeaderForm((prev) => ({
-                        ...prev,
-                        workingHours: {
-                          ...prev.workingHours,
-                          end: Number(e.target.value),
-                        },
-                      }))
-                    }
-                    className={`w-full px-3 py-2 border rounded-lg transition-colors ${
-                      settings.darkMode
-                        ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                        : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:ring-2 focus:ring-blue-200`}
-                  >
-                    {Array.from({ length: 24 }, (_, i) => (
-                      <option key={i} value={i}>
-                        {i}:00
-                      </option>
-                    ))}
-                  </select>
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-2 ${
+                    settings.darkMode ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  Manager Working Hours
+                </label>
+                <p
+                  className={`text-xs mb-3 ${
+                    settings.darkMode ? "text-gray-400" : "text-gray-600"
+                  }`}
+                >
+                  These hours will be automatically converted to each team
+                  member's timezone
+                </p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      className={`block text-xs ${
+                        settings.darkMode ? "text-gray-400" : "text-gray-600"
+                      } mb-1`}
+                    >
+                      Start Time
+                    </label>
+                    <select
+                      value={leaderForm.workingHours.start}
+                      onChange={(e) =>
+                        setLeaderForm((prev) => ({
+                          ...prev,
+                          workingHours: {
+                            ...prev.workingHours,
+                            start: Number(e.target.value),
+                          },
+                        }))
+                      }
+                      className={`w-full px-3 py-2 border rounded-lg transition-colors ${
+                        settings.darkMode
+                          ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                          : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                      } focus:ring-2 focus:ring-blue-200`}
+                    >
+                      {Array.from({ length: 24 }, (_, i) => (
+                        <option key={i} value={i}>
+                          {i.toString().padStart(2, "0")}:00
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      className={`block text-xs ${
+                        settings.darkMode ? "text-gray-400" : "text-gray-600"
+                      } mb-1`}
+                    >
+                      End Time
+                    </label>
+                    <select
+                      value={leaderForm.workingHours.end}
+                      onChange={(e) =>
+                        setLeaderForm((prev) => ({
+                          ...prev,
+                          workingHours: {
+                            ...prev.workingHours,
+                            end: Number(e.target.value),
+                          },
+                        }))
+                      }
+                      className={`w-full px-3 py-2 border rounded-lg transition-colors ${
+                        settings.darkMode
+                          ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                          : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                      } focus:ring-2 focus:ring-blue-200`}
+                    >
+                      {Array.from({ length: 24 }, (_, i) => (
+                        <option key={i} value={i}>
+                          {i.toString().padStart(2, "0")}:00
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 

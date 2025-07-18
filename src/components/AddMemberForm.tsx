@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+"use client";
+
+import type React from "react";
+import { useState } from "react";
 import { Plus, X } from "lucide-react";
 import type { TeamMember, AppSettings } from "../types";
 import { commonTimezones } from "../utils/timezone";
@@ -46,9 +49,9 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
       <div
-        className={`rounded-xl shadow-2xl w-full max-w-md ${
+        className={`rounded-xl shadow-2xl w-full max-w-md mx-2 sm:mx-0 ${
           settings.darkMode ? "bg-gray-800" : "bg-white"
         }`}
       >
@@ -76,7 +79,10 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          className="p-4 sm:p-6 space-y-3 sm:space-y-4"
+        >
           <div>
             <label
               className={`block text-sm font-medium mb-2 ${
@@ -152,7 +158,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label
                 className={`block text-sm font-medium mb-2 ${
