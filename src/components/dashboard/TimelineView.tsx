@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Clock, MapPin, Users, AlertCircle } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import type { TeamMember, AppSettings, Leader } from "../types";
+import type { TeamMember, AppSettings, Leader } from "../../types";
 import {
   getTimeInTimezone,
   formatTime,
@@ -13,7 +13,7 @@ import {
   isWithinWorkingHours,
   getTimezoneOffset,
   getTimezoneAbbreviation,
-} from "../utils/timezone";
+} from "../../utils/timezone";
 
 interface TimelineViewProps {
   members: TeamMember[];

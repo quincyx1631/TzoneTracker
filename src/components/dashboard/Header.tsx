@@ -2,6 +2,7 @@
 
 import type React from "react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Globe,
   Search,
@@ -13,9 +14,10 @@ import {
   Moon,
   Sun,
   Clock,
+  Home,
 } from "lucide-react";
-import type { Leader, AppSettings } from "../types";
-import { commonTimezones } from "../utils/timezone";
+import type { Leader, AppSettings } from "../../types";
+import { commonTimezones } from "../../utils/timezone";
 
 interface HeaderProps {
   leader: Leader | null;
@@ -93,16 +95,21 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-2 sm:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 sm:space-x-3">
-              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-              </div>
-              <h1
-                className={`text-base sm:text-lg font-semibold ${
-                  settings.darkMode ? "text-white" : "text-gray-900"
-                }`}
+              <Link
+                to="/"
+                className="flex items-center space-x-2 sm:space-x-3 hover:opacity-80 transition-opacity"
               >
-                TimezoneTracker
-              </h1>
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                </div>
+                <h1
+                  className={`text-base sm:text-lg font-semibold ${
+                    settings.darkMode ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  TimezoneTracker
+                </h1>
+              </Link>
 
               <div className="hidden sm:flex items-center space-x-2 ml-4 lg:ml-8">
                 <div
@@ -154,6 +161,18 @@ export const Header: React.FC<HeaderProps> = ({
                   } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
                 />
               </div>
+
+              <Link
+                to="/"
+                className={`p-1.5 sm:p-2 rounded-lg transition-colors ${
+                  settings.darkMode
+                    ? "text-gray-300 hover:bg-gray-800"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`}
+                title="Home"
+              >
+                <Home className="w-4 h-4 sm:w-5 sm:h-5" />
+              </Link>
 
               <button
                 onClick={onAddMember}

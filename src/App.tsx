@@ -1,16 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { Users, Globe, Clock, Calendar } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { TeamMember, Leader, AppSettings } from "./types";
 import { isTimezoneSupported } from "./utils/timezone";
-import { Header } from "./components/Header";
-import { TeamMemberCard } from "./components/TeamMemberCard";
-import { AddMemberForm } from "./components/AddMemberForm";
-import { MeetingTimeFinder } from "./components/MeetingTimeFinder";
-import { TimezoneGrid } from "./components/TimezoneGrid";
-import { TimelineView } from "./components/TimelineView";
+import { Header } from "./components/dashboard/Header";
+import { TeamMemberCard } from "./components/dashboard/TeamMemberCard";
+import { AddMemberForm } from "./components/dashboard/AddMemberForm";
+import { MeetingTimeFinder } from "./components/dashboard/MeetingTimeFinder";
+import { TimezoneGrid } from "./components/dashboard/TimezoneGrid";
+import { TimelineView } from "./components/dashboard/TimelineView";
+import { LandingPage } from "./components/landing-page/LandingPage";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 
 export default function App() {
@@ -26,6 +33,59 @@ export default function App() {
     darkMode: false,
     defaultWorkingHours: { start: 9, end: 17 },
   });
+
+  // Apply dark mode to document
+  useEffect(() => {
+    if (settings.darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [settings.darkMode]);
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route
+          path="/dashboard"
+          element={
+            <Dashboard
+              members={members}
+              setMembers={setMembers}
+              leader={leader}
+              setLeader={setLeader}
+              settings={settings}
+              setSettings={setSettings}
+            />
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
+  );
+}
+
+// Dashboard component
+function Dashboard({
+  members,
+  setMembers,
+  leader,
+  setLeader,
+  settings,
+  setSettings,
+}: {
+  members: TeamMember[];
+  setMembers: (
+    members: TeamMember[] | ((prev: TeamMember[]) => TeamMember[])
+  ) => void;
+  leader: Leader | null;
+  setLeader: (leader: Leader | null) => void;
+  settings: AppSettings;
+  setSettings: (
+    settings: AppSettings | ((prev: AppSettings) => AppSettings)
+  ) => void;
+}) {
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -38,15 +98,6 @@ export default function App() {
 
     return () => clearInterval(interval);
   }, []);
-
-  // Apply dark mode to document
-  useEffect(() => {
-    if (settings.darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [settings.darkMode]);
 
   const addMember = (memberData: Omit<TeamMember, "id">) => {
     const newMember: TeamMember = {
@@ -182,7 +233,7 @@ export default function App() {
                             hour: "numeric",
                             hour12: false,
                           })
-                            .formatToParts(new Date())
+                            .formatToParts(currentTime)
                             .find((part) => part.type === "hour")?.value;
                           const currentHour = hour
                             ? Number.parseInt(hour, 10)
@@ -225,6 +276,9 @@ export default function App() {
                 </div>
               </div>
             </div>
+
+            {/* Timezone Grid */}
+            <TimezoneGrid members={members} settings={settings} />
 
             {/* Team Members */}
             <div>
@@ -292,9 +346,6 @@ export default function App() {
                 </div>
               )}
             </div>
-
-            {/* Timezone Grid */}
-            <TimezoneGrid members={members} settings={settings} />
           </TabsContent>
 
           <TabsContent value="timeline" className="space-y-8">

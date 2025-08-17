@@ -1,11 +1,11 @@
 import type React from "react";
 import { Calendar, Users, Clock } from "lucide-react";
-import type { TeamMember, AppSettings, Leader } from "../types";
+import type { TeamMember, AppSettings, Leader } from "../../types";
 import {
   convertWorkingHoursToTimezone,
   isWithinWorkingHours,
   getTimeInTimezone,
-} from "../utils/timezone";
+} from "../../utils/timezone";
 
 interface MeetingTimeFinderProps {
   members: TeamMember[];

@@ -1,22 +1,87 @@
-// For better timezone handling, you should install: npm install date-fns date-fns-tz
-// This provides more accurate timezone conversions and handles DST properly
-
 export const commonTimezones = [
-  "America/New_York",
-  "America/Chicago",
-  "America/Denver",
-  "America/Los_Angeles",
-  "America/Vancouver",
-  "Europe/London",
-  "Europe/Paris",
-  "Europe/Berlin",
-  "Asia/Tokyo",
-  "Asia/Shanghai",
-  "Asia/Kolkata",
-  "Asia/Manila", // Philippines
-  "Australia/Sydney",
-  "Pacific/Auckland",
+
+  // North America
+  "America/New_York",      // EST/EDT - Eastern US
+  "America/Chicago",       // CST/CDT - Central US
+  "America/Denver",        // MST/MDT - Mountain US
+  "America/Los_Angeles",   // PST/PDT - Pacific US
+  "America/Vancouver",     // PST/PDT - Western Canada
+  "America/Toronto",       // EST/EDT - Eastern Canada
+  "America/Mexico_City",   // CST/CDT - Mexico
+  "America/Sao_Paulo",     // BRT - Brazil (major remote work hub)
+  
+  // Europe
+  "Europe/London",         // GMT/BST - UK
+  "Europe/Paris",          // CET/CEST - France
+  "Europe/Berlin",         // CET/CEST - Germany
+  "Europe/Amsterdam",      // CET/CEST - Netherlands
+  "Europe/Zurich",         // CET/CEST - Switzerland
+  "Europe/Stockholm",      // CET/CEST - Sweden 
+  "Europe/Warsaw",         // CET/CEST - Poland
+  "Europe/Istanbul",       // TRT - Turkey
+  "Europe/Kiev",           // EET/EEST - Ukraine
+  
+  // Asia-Pacific
+  "Asia/Tokyo",            // JST - Japan
+  "Asia/Shanghai",         // CST - China
+  "Asia/Seoul",            // KST - South Korea
+  "Asia/Singapore",        // SGT - Singapore
+  "Asia/Kolkata",          // IST - India (huge remote workforce)
+  "Asia/Manila",           // PHT - Philippines
+  "Asia/Bangkok",          // ICT - Thailand
+  "Asia/Dubai",            // GST - UAE 
+  "Asia/Tel_Aviv",         // IST - Israel 
+  
+  // Oceania
+  "Australia/Sydney",      // AEST/AEDT - Australia East
+  "Australia/Melbourne",   // AEST/AEDT - Australia Southeast
+  "Pacific/Auckland",      // NZST/NZDT - New Zealand
+  
+  // Africa 
+  "Africa/Lagos",          // WAT - Nigeria
+  "Africa/Cairo",          // EET - Egypt
+  "Africa/Johannesburg",   // SAST - South Africa
 ]
+
+export const businessHoursPresets = {
+  "standard": { start: 9, end: 17 },    
+  "tech": { start: 10, end: 18 },        
+  "early": { start: 8, end: 16 },      
+  "flexible": { start: 9, end: 15 },      
+  "european": { start: 8, end: 16 },       
+  "asian": { start: 9, end: 18 },        
+  "freelancer": { start: 10, end: 22 },    
+} as const
+
+export const timezoneGroups = {
+  americas: [
+    "America/New_York",
+    "America/Chicago", 
+    "America/Denver",
+    "America/Los_Angeles",
+    "America/Toronto",
+    "America/Sao_Paulo",
+  ],
+  europe: [
+    "Europe/London",
+    "Europe/Paris",
+    "Europe/Berlin",
+    "Europe/Amsterdam",
+    "Europe/Stockholm",
+  ],
+  asia: [
+    "Asia/Tokyo",
+    "Asia/Shanghai",
+    "Asia/Singapore",
+    "Asia/Kolkata",
+    "Asia/Manila",
+  ],
+  oceania: [
+    "Australia/Sydney",
+    "Australia/Melbourne",
+    "Pacific/Auckland",
+  ]
+} as const
 
 export function isTimezoneSupported(timezone: string): boolean {
   try {
@@ -30,7 +95,6 @@ export function isTimezoneSupported(timezone: string): boolean {
 export function getTimeInTimezone(timezone: string, date?: Date): Date {
   const targetDate = date || new Date()
   try {
-    // Create a date object representing the time in the target timezone
     const formatter = new Intl.DateTimeFormat("en-CA", {
       timeZone: timezone,
       year: "numeric",
@@ -145,7 +209,6 @@ export function convertWorkingHoursToTimezone(
     const endHour = endInMemberTz.getHours()
     let nextDay = false
 
-    // Check if the working hours span to the next day
     if (endHour < startHour) {
       nextDay = true
     }
@@ -157,7 +220,6 @@ export function convertWorkingHoursToTimezone(
     }
   } catch (error) {
     console.error("Error converting working hours:", error)
-    // Return original hours as fallback
     return {
       start: managerWorkingHours.start,
       end: managerWorkingHours.end,
@@ -168,34 +230,32 @@ export function convertWorkingHoursToTimezone(
 
 function convertTimeToTimezone(date: Date, fromTimezone: string, toTimezone: string): Date {
   try {
-    // Get the time as it would be in the source timezone
-    const sourceTime = new Date(
-      date.toLocaleString("en-US", {
-        timeZone: fromTimezone,
-      }),
-    )
-
-    // Calculate the offset difference
-    const sourceOffset = getTimezoneOffsetInMinutes(fromTimezone)
-    const targetOffset = getTimezoneOffsetInMinutes(toTimezone)
-    const offsetDiff = targetOffset - sourceOffset
-
-    // Apply the offset difference
-    const convertedTime = new Date(date.getTime() + offsetDiff * 60 * 1000)
-    return convertedTime
+    const formatter = new Intl.DateTimeFormat("en-CA", {
+      timeZone: fromTimezone,
+      year: "numeric",
+      month: "2-digit", 
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false
+    })
+    
+    const parts = formatter.formatToParts(date)
+    const year = Number.parseInt(parts.find((p) => p.type === "year")?.value || "0")
+    const month = Number.parseInt(parts.find((p) => p.type === "month")?.value || "1") - 1
+    const day = Number.parseInt(parts.find((p) => p.type === "day")?.value || "1")
+    const hour = Number.parseInt(parts.find((p) => p.type === "hour")?.value || "0")
+    const minute = Number.parseInt(parts.find((p) => p.type === "minute")?.value || "0")
+    const second = Number.parseInt(parts.find((p) => p.type === "second")?.value || "0")
+    
+    // Create a date representing the time in the source timezone
+    const sourceDate = new Date(year, month, day, hour, minute, second)
+    
+    // Now convert to the target timezone
+    return getTimeInTimezone(toTimezone, sourceDate)
   } catch {
     return date
-  }
-}
-
-function getTimezoneOffsetInMinutes(timezone: string): number {
-  try {
-    const now = new Date()
-    const utc = new Date(now.getTime() + now.getTimezoneOffset() * 60000)
-    const target = new Date(utc.toLocaleString("en-US", { timeZone: timezone }))
-    return (target.getTime() - utc.getTime()) / (1000 * 60)
-  } catch {
-    return 0
   }
 }
 
@@ -245,4 +305,110 @@ export function findOptimalMeetingTimes(members: TeamMember[]) {
   }
 
   return availability
+}
+
+export function getMeetingTimeSuggestions(members: TeamMember[], minimumAttendance = 0.7) {
+  const availability = findOptimalMeetingTimes(members)
+  
+  return availability
+    .filter(slot => slot.percentage >= minimumAttendance * 100)
+    .map(slot => {
+      const timeDate = new Date()
+      timeDate.setHours(slot.hour, 0, 0, 0)
+      return {
+        ...slot,
+        timeSlot: formatTime(timeDate),
+        quality: slot.percentage === 100 ? 'perfect' : 
+                 slot.percentage >= 80 ? 'good' : 'acceptable',
+        description: `${slot.memberCount}/${members.length} members available (${slot.percentage.toFixed(0)}%)`
+      }
+    })
+    .sort((a, b) => b.percentage - a.percentage)
+}
+
+export function findConsecutiveMeetingSlots(members: TeamMember[], durationHours = 2, minimumAttendance = 0.7) {
+  const availability = findOptimalMeetingTimes(members)
+  const consecutiveSlots = []
+  
+  for (let startHour = 0; startHour <= 24 - durationHours; startHour++) {
+    const slots = []
+    let validSlot = true
+    
+    for (let hour = startHour; hour < startHour + durationHours; hour++) {
+      const slot = availability[hour % 24]
+      if (slot.percentage < minimumAttendance * 100) {
+        validSlot = false
+        break
+      }
+      slots.push(slot)
+    }
+    
+    if (validSlot) {
+      const avgPercentage = slots.reduce((sum, slot) => sum + slot.percentage, 0) / slots.length
+      const startTimeDate = new Date()
+      startTimeDate.setHours(startHour, 0, 0, 0)
+      const endTimeDate = new Date()
+      endTimeDate.setHours(startHour + durationHours, 0, 0, 0)
+      
+      consecutiveSlots.push({
+        startHour,
+        endHour: startHour + durationHours,
+        duration: durationHours,
+        averageAttendance: avgPercentage,
+        startTime: formatTime(startTimeDate),
+        endTime: formatTime(endTimeDate),
+        slots
+      })
+    }
+  }
+  
+  return consecutiveSlots.sort((a, b) => b.averageAttendance - a.averageAttendance)
+}
+
+export function convertMeetingTimeToAllTimezones(meetingHour: number, memberTimezones: string[]) {
+  const baseDate = new Date()
+  baseDate.setHours(meetingHour, 0, 0, 0)
+  
+  return memberTimezones.map(timezone => {
+    const localTime = getTimeInTimezone(timezone, baseDate)
+    return {
+      timezone,
+      localTime: formatTime(localTime),
+      localDate: formatDate(localTime),
+      hour: localTime.getHours(),
+      isNextDay: localTime.getDate() !== baseDate.getDate(),
+      isPreviousDay: localTime.getDate() < baseDate.getDate(),
+      abbreviation: getTimezoneAbbreviation(timezone),
+      offset: getTimezoneOffset(timezone)
+    }
+  })
+}
+
+export function isReasonableMeetingTime(hour: number): boolean {
+  return hour >= 8 && hour <= 22
+}
+
+export function getTimezoneFriendlyMeetings(members: TeamMember[]) {
+  const suggestions = getMeetingTimeSuggestions(members, 0.6)
+  
+  return suggestions.map(suggestion => {
+    const allTimezones = convertMeetingTimeToAllTimezones(
+      suggestion.hour, 
+      members.map(m => m.timezone)
+    )
+    
+    const reasonableCount = allTimezones.filter(tz => 
+      isReasonableMeetingTime(tz.hour)
+    ).length
+    
+    return {
+      ...suggestion,
+      allTimezones,
+      reasonableTimeCount: reasonableCount,
+      reasonableTimePercentage: (reasonableCount / allTimezones.length) * 100,
+      recommendation: reasonableCount === allTimezones.length ? 'excellent' :
+                     reasonableCount >= allTimezones.length * 0.8 ? 'good' :
+                     reasonableCount >= allTimezones.length * 0.6 ? 'fair' : 'poor'
+    }
+  })
 }

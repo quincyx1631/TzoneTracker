@@ -2,8 +2,12 @@
 
 import type React from "react";
 import { Clock, MapPin, Briefcase, X } from "lucide-react";
-import type { TeamMember, AppSettings } from "../types";
-import { getTimeInTimezone, formatTime, formatDate } from "../utils/timezone";
+import type { TeamMember, AppSettings } from "../../types";
+import {
+  getTimeInTimezone,
+  formatTime,
+  formatDate,
+} from "../../utils/timezone";
 
 interface TeamMemberCardProps {
   member: TeamMember;

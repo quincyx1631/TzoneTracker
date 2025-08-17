@@ -3,8 +3,8 @@
 import type React from "react";
 import { useState } from "react";
 import { Plus, X } from "lucide-react";
-import type { TeamMember, AppSettings } from "../types";
-import { commonTimezones } from "../utils/timezone";
+import type { TeamMember, AppSettings } from "../../types";
+import { commonTimezones } from "../../utils/timezone";
 
 interface AddMemberFormProps {
   onAdd: (member: Omit<TeamMember, "id">) => void;
