@@ -74,9 +74,7 @@ export function Dashboard({
   return (
     <div
       className={`min-h-screen transition-colors ${
-        settings.darkMode
-          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
-          : "bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"
+        settings.darkMode ? "bg-background" : "bg-background"
       }`}
     >
       <Header
@@ -120,55 +118,29 @@ export function Dashboard({
           <TabsContent value="overview" className="space-y-8">
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-              <div
-                className={`rounded-xl shadow-lg p-6 ${
-                  settings.darkMode ? "bg-gray-800" : "bg-white"
-                }`}
-              >
+              <div className="rounded-xl shadow-lg p-6 bg-card">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Users className="w-5 h-5 text-blue-600" />
+                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Users className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <p
-                      className={`text-sm ${
-                        settings.darkMode ? "text-gray-400" : "text-gray-600"
-                      }`}
-                    >
+                    <p className="text-sm text-muted-foreground">
                       Team Members
                     </p>
-                    <p
-                      className={`text-2xl font-bold ${
-                        settings.darkMode ? "text-white" : "text-gray-900"
-                      }`}
-                    >
+                    <p className="text-2xl font-bold text-foreground">
                       {members.length}
                     </p>
                   </div>
                 </div>
               </div>
-              <div
-                className={`rounded-xl shadow-lg p-6 ${
-                  settings.darkMode ? "bg-gray-800" : "bg-white"
-                }`}
-              >
+              <div className="rounded-xl shadow-lg p-6 bg-card">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
-                    <Globe className="w-5 h-5 text-green-600" />
+                  <div className="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center">
+                    <Globe className="w-5 h-5 text-secondary" />
                   </div>
                   <div>
-                    <p
-                      className={`text-sm ${
-                        settings.darkMode ? "text-gray-400" : "text-gray-600"
-                      }`}
-                    >
-                      Active Now
-                    </p>
-                    <p
-                      className={`text-2xl font-bold ${
-                        settings.darkMode ? "text-white" : "text-gray-900"
-                      }`}
-                    >
+                    <p className="text-sm text-muted-foreground">Active Now</p>
+                    <p className="text-2xl font-bold text-foreground">
                       {
                         members.filter((member) => {
                           const safeTimezone = isTimezoneSupported(
@@ -196,28 +168,14 @@ export function Dashboard({
                   </div>
                 </div>
               </div>
-              <div
-                className={`rounded-xl shadow-lg p-6 ${
-                  settings.darkMode ? "bg-gray-800" : "bg-white"
-                }`}
-              >
+              <div className="rounded-xl shadow-lg p-6 bg-card">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
-                    <Globe className="w-5 h-5 text-purple-600" />
+                  <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                    <Globe className="w-5 h-5 text-accent" />
                   </div>
                   <div>
-                    <p
-                      className={`text-sm ${
-                        settings.darkMode ? "text-gray-400" : "text-gray-600"
-                      }`}
-                    >
-                      Timezones
-                    </p>
-                    <p
-                      className={`text-2xl font-bold ${
-                        settings.darkMode ? "text-white" : "text-gray-900"
-                      }`}
-                    >
+                    <p className="text-sm text-muted-foreground">Timezones</p>
+                    <p className="text-2xl font-bold text-foreground">
                       {new Set(members.map((m) => m.timezone)).size}
                     </p>
                   </div>
@@ -231,29 +189,17 @@ export function Dashboard({
             {/* Team Members */}
             <div>
               <div className="flex items-center justify-between mb-6">
-                <h2
-                  className={`text-xl font-semibold ${
-                    settings.darkMode ? "text-white" : "text-gray-900"
-                  }`}
-                >
+                <h2 className="text-xl font-semibold text-foreground">
                   Team Members
                 </h2>
                 {searchQuery && (
-                  <p
-                    className={`text-sm ${
-                      settings.darkMode ? "text-gray-400" : "text-gray-600"
-                    }`}
-                  >
+                  <p className="text-sm text-muted-foreground">
                     Showing {filteredMembers.length} of {members.length} members
                   </p>
                 )}
               </div>
               {filteredMembers.length === 0 ? (
-                <div
-                  className={`rounded-xl shadow-lg p-12 text-center ${
-                    settings.darkMode ? "bg-gray-800" : "bg-white"
-                  }`}
-                >
+                <div className="rounded-xl shadow-lg p-12 text-center bg-card">
                   <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                   <h3
                     className={`text-lg font-semibold mb-2 ${

@@ -27,24 +27,14 @@ export const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
     currentHour < member.workingHours.end;
 
   return (
-    <div
-      className={`rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-4 sm:p-6 border ${
-        settings.darkMode
-          ? "bg-gray-800 border-gray-700"
-          : "bg-white border-gray-100"
-      }`}
-    >
+    <div className="rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-4 sm:p-6 border bg-card border-border">
       <div className="flex items-start justify-between mb-3 sm:mb-4">
         <div className="flex items-center space-x-2 sm:space-x-3">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-lg">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-sm sm:text-lg">
             {member.name.charAt(0).toUpperCase()}
           </div>
           <div>
-            <h3
-              className={`text-base sm:text-lg font-semibold ${
-                settings.darkMode ? "text-white" : "text-gray-900"
-              }`}
-            >
+            <h3 className="text-base sm:text-lg font-semibold text-foreground">
               {member.name}
             </h3>
             <div
